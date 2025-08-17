@@ -1,0 +1,91 @@
+spring:
+  application:
+    name: booking-service
+  
+  # Конфигурация базы данных
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booking_db
+    username: booking_user
+    password: booking_password
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA конфигурация
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    default-schema: booking
+
+# Конфигурация сервера
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Swagger/OpenAPI конфигурация
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  info:
+    title: Booking Service API
+    description: API для бронирования мест в коворкинге
+    version: 1.0.0
+    contact:
+      name: Coworking Team
+      email: support@coworking.com
+
+# Конфигурация логирования
+logging:
+  level:
+    com.coworking.bookingservice: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Конфигурация внешних сервисов
+app:
+  auth-service:
+    url: http://localhost:8081
+    timeout: 5000
+  
+  # Настройки JWT
+  jwt:
+    secret: ${JWT_SECRET}:default-secret-to-change
+    expiration: 86400000 # 24 часа в миллисекундах
+
+# Профили для разных окружений
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/booking_db
+
+app:
+  auth-service:
+    url: http://auth-service:8081
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true 

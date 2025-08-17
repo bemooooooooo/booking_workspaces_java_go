@@ -1,0 +1,77 @@
+.admin-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-container h1 {
+  color: #343a40;
+  margin-bottom: 10px;
+}
+
+.admin-container h2 {
+  color: #495057;
+  margin-bottom: 20px;
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.admin-actions {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #4a6fa5;
+}
+
+.error-message {
+  background-color: #fff3f3;
+  color: #d32f2f;
+  padding: 12px 16px;
+  border-radius: 4px;
+  border-left: 4px solid #d32f2f;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 15px;
+  }
+  
+  .admin-actions {
+    justify-content: center;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Анимация загрузки */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-spinner::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(74, 111, 165, 0.3);
+  border-radius: 50%;
+  border-top-color: #4a6fa5;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+}

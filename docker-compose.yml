@@ -1,0 +1,110 @@
+version: '3.8'
+
+configs:
+  jwt_env:
+    content: mysupersecretjwtkeychangeinproductionifitpossible
+
+services:
+  # База данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: booking_postgres
+    environment:
+      POSTGRES_DB: booking_db
+      POSTGRES_USER: booking_user
+      POSTGRES_PASSWORD: booking_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - booking_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U booking_user -d booking_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Java Spring Boot сервис бронирования
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: Dockerfile
+    container_name: booking_service
+    ports:
+      - "8080:8080"
+    configs:
+      - source: jwt_env
+        target: /run/secrets/jwt_env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/booking_db
+      SPRING_DATASOURCE_USERNAME: booking_user
+      SPRING_DATASOURCE_PASSWORD: booking_password
+      JWT_SECRET: /run/secrets/jwt_env
+      AUTH_SERVICE_URL: http://auth-service:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - booking_network
+    restart: unless-stopped
+
+  # Go сервис авторизации
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth_service
+    ports:
+      - "8081:8080"
+    configs:
+      - source: jwt_env
+        target: /run/secrets/jwt_env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: booking_db
+      DB_USER: booking_user
+      DB_PASSWORD: booking_password
+      JWT_SECRET: /run/secrets/jwt_env
+      SERVER_PORT: 8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - booking_network
+    restart: unless-stopped
+
+  # React SPA фронтенд
+  booking-frontend:
+    build:
+      context: ./booking-frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_AUTH_URL=http://auth-service:8081/api
+        - REACT_APP_API_URL=http://booking-service:8080/api
+    container_name: booking_frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_URL=http://booking-service:8080/api
+      # REACT_APP_API_URL: /api
+      - REACT_APP_AUTH_URL=http://auth-service:8081/api
+      # REACT_APP_AUTH_URL: /auth-api
+    depends_on:
+      - booking-service
+      - auth-service
+    networks:
+      - booking_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  booking_network:
+    driver: bridge

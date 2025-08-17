@@ -1,0 +1,92 @@
+.booking-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.booking-container {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.booking-calendar-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.booking-form-section {
+  flex: 1;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.booking-instructions {
+  padding: 1rem;
+}
+
+.booking-instructions ol {
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+}
+
+.booking-instructions li {
+  margin-bottom: 0.5rem;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  border: 1px solid #c3e6cb;
+}
+
+.booking-list-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.booking-list {
+  list-style: none;
+  padding: 0;
+}
+
+.booking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.booking-info {
+  flex: 1;
+}
+
+.workspace-type {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.booking-time {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.booking-notes {
+  font-style: italic;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .booking-container {
+    flex-direction: column;
+  }
+}
